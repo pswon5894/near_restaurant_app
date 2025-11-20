@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -31,12 +33,28 @@ class MainActivity : AppCompatActivity() {
 
     private val PERMISSIONS_REQUEST_CODE = 100
 
+    var latitude : Double? = 0.0
+    var longitude : Double? = 0.0
+
     val REQUIRED_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     lateinit var getGPSPermissionLauncher : ActivityResultLauncher<Intent>
+
+    val startMapActivityResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        object : ActivityResultCallback<ActivityResult> {
+            override fun onActivityResult(result: ActivityResult) {
+                if(result?.resultCode?: 0 == Activity.RESULT_OK){
+                    latitude = result?.data?.getDoubleExtra("latitude", 0.0) ?: 0.0
+                    longitude = result?.data?.getDoubleExtra("longitude", 0.0) ?: 0.0
+                    updateUI()
+                }
+            }
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         checkAllPermissions()
         updateUI()
+        setFab()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -79,6 +98,32 @@ class MainActivity : AppCompatActivity() {
 
         if(hasFineLocationPermission != PackageManager.PERMISSION_GRANTED || hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this@MainActivity,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == PERMISSIONS_REQUEST_CODE && grantResults.size == REQUIRED_PERMISSIONS.size){
+            var checkResult = true
+
+            for (result in grantResults){
+                if(result != PackageManager.PERMISSION_GRANTED){
+                    checkResult =false
+                    break;
+                }
+            }
+
+            if(checkResult) {
+                // 위치값을 가져올 수 있음
+                updateUI()
+            } else {
+                Toast.makeText(this@MainActivity, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼시션을 허용해주세요.", Toast.LENGTH_LONG).show()
+                finish()
+            }
         }
     }
 
@@ -114,12 +159,14 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI() {
         locationProvider = LocationProvider(this@MainActivity)
 
-        val latitude: Double? = locationProvider.getLocationLatitude()
-        val longitude : Double? = locationProvider.getLocationLongitude()
+        if(latitude == 0.0 && longitude == 0.0) {
+            latitude = locationProvider.getLocationLatitude()
+            longitude = locationProvider.getLocationLongitude()
+        }
 
         if(latitude != null && longitude != null) {
             //1. 현재 위치 가져오고 UI 업데이트
-            val address = getCurrentAddress(latitude, longitude)
+            val address = getCurrentAddress(latitude!!, longitude!!)
 
             address?.let{
                 binding.tvLocationTitle.text="${it.subLocality}"
@@ -128,6 +175,15 @@ class MainActivity : AppCompatActivity() {
             }
         }else{
             Toast.makeText(this, "위도, 경도 정보를 가져올 수 없습니다.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setFab(){
+        binding.fab.setOnClickListener {
+            val intext = Intent(this, MapActivity::class.java)
+            intent.putExtra("currentLat", latitude)
+            intent.putExtra("currentLng", longitude)
+            startMapActivityResult.launch(intent)
         }
     }
     private fun getCurrentAddress (latitude : Double, longitude : Double) : Address?{

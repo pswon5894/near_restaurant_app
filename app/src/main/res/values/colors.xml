@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="orange">#FF6E40</color>
+    <color name="transparent_orange">#C3FF6E40</color>
+    //앞에 숫자 2개 추가로 투명도 조절가능
 </resources>

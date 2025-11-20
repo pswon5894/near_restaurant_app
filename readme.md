@@ -6,3 +6,5 @@
 
 https://bj-turtle.tistory.com/100
 뷰바인딩
+
+//ContextCompat은 Resource에서 값을 가져오거나 퍼미션을 확인할 때 사용할 때 SDK버전을 고려하지 않아도 되도록 (내부적으로 SDK버전을 처리해둔) 클래스
