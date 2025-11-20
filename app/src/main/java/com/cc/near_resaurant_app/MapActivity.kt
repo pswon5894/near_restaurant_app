@@ -37,7 +37,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
-//        setButton()
+        setButton()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -46,7 +46,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-//    private fun setButton() {
+    private fun setButton() {
 //        binding.btnCheckHere.setOnClickListener{
 //            mMap?.let{
 //                val intent = Intent()
@@ -56,16 +56,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 //                finish()
 //            }
 //        }
-//
-//        binding.fabCurrentLocation.setOnClickListener {
-//            val locationProvider = LocationProvider(this@MapActivity)
-//            val latitude = locationProvider.getLocationLatitude()
-//            val longitude = locationProvider.getLocationLongitude()
-//
-//            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude!!,longitude!!), 16f))
-//            setMarker()
-//        }
-//    }
+
+        binding.fabCurrentLocation.setOnClickListener {
+            val locationProvider = LocationProvider(this@MapActivity)
+            val latitude = locationProvider.getLocationLatitude()
+            val longitude = locationProvider.getLocationLongitude()
+
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude!!,longitude!!), 16f))
+            setMarker()
+        }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -86,11 +86,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             markerOption.title("마커 위치")
             val marker = it.addMarker(markerOption)
 
-            it.setOnCameraMoveListener {
-                marker?.let{ marker ->
-                    marker.position = it.cameraPosition.target
-                }
-            }
+//            it.setOnCameraMoveListener {
+//                marker?.let{ marker ->
+//                    marker.position = it.cameraPosition.target
+//                }
+//            }
         }
     }
 }

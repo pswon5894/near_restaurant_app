@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setFab(){
         binding.fab.setOnClickListener {
-            val intext = Intent(this, MapActivity::class.java)
+            val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("currentLat", latitude)
             intent.putExtra("currentLng", longitude)
             startMapActivityResult.launch(intent)
