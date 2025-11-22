@@ -15,6 +15,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.internal.IGoogleMapDelegate
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -47,16 +51,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setButton() {
-//        binding.btnCheckHere.setOnClickListener{
-//            mMap?.let{
-//                val intent = Intent()
-//                intent.putExtra("latitude", it.cameraPosition.target.latitude)
-//                intent.putExtra("longitude",it.cameraPosition.target.longitude)
-//                setResult(Activity.RESULT_OK, intent)
-//                finish()
-//            }
-//        }
-
         binding.fabCurrentLocation.setOnClickListener {
             val locationProvider = LocationProvider(this@MapActivity)
             val latitude = locationProvider.getLocationLatitude()
@@ -75,6 +69,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             it.setMinZoomPreference(12.0f)
             it.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16f))
             setMarker()
+
+            // 주변 식당 불러오기
+            loadNearbyRestaurants(currentLat, currentLng)
         }
     }
 
@@ -85,12 +82,46 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             markerOption.position(it.cameraPosition.target)
             markerOption.title("마커 위치")
             val marker = it.addMarker(markerOption)
-
-//            it.setOnCameraMoveListener {
-//                marker?.let{ marker ->
-//                    marker.position = it.cameraPosition.target
-//                }
-//            }
         }
+    }
+
+    private fun loadNearbyRestaurants(lat: Double, lng: Double) {
+
+        val locationStr = "$lat,$lng"
+        val apiKey = BuildConfig.PLACES_API_KEY
+
+        val call = RetrofitClient.instance.getNearbyPlaces(
+            locationStr,
+            1000,
+            "restaurant",
+            apiKey
+        )
+
+        call.enqueue(object : Callback<PlacesResponse> {
+            override fun onResponse(
+                call: Call<PlacesResponse>,
+                response: Response<PlacesResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val body = response.body() ?: return
+
+                    for (place in body.results) {
+                        val p = place.geometry?.location ?: continue
+
+                        val pos = LatLng(p.lat, p.lng)
+
+                        mMap?.addMarker(
+                            MarkerOptions()
+                                .position(pos)
+                                .title(place.name)
+                        )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PlacesResponse>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
     }
 }
