@@ -6,9 +6,10 @@ plugins {
 }
 
 // local.properties 사용
-val properties: Properties = Properties().apply {
-    load(rootProject.file("local.properties").inputStream())
-}
+val properties = Properties()
+properties.load(rootProject.file("local.properties").inputStream())
+
+val G_MAP_API_KEY = properties.getProperty("G_MAP_API_KEY")
 
 android {
     namespace = "com.cc.near_restaurant_app"
@@ -23,20 +24,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // BuildConfig에 API Key 추가
-//        buildConfigField("String", "G_MAP_API_KEY", properties.getProperty("G_MAP_API_KEY"))
-//        buildConfigField("String", "PLACES_API_KEY", properties.getProperty("PLACES_API_KEY"))
-        buildConfigField(
-            "String",
-            "G_MAP_API_KEY",
-            "\"${properties.getProperty("G_MAP_API_KEY")}\""
-        )
-
         buildConfigField(
             "String",
             "PLACES_API_KEY",
-            "\"${properties.getProperty("PLACES_API_KEY")}\""
+            properties.getProperty("PLACES_API_KEY")
         )
+
+        // 기존 buildConfigField 그대로 둬도 상관없지만 Manifest 치환을 위해 placeholder 추가
+        manifestPlaceholders["G_MAP_API_KEY"] = G_MAP_API_KEY
     }
 
     buildTypes {
@@ -84,4 +79,6 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 }
