@@ -1,5 +1,6 @@
 package com.cc.near_restaurant_app.retrofit
 
+import com.cc.near_restaurant_app.BuildConfig
 import com.cc.near_restaurant_app.retrofit.model.PlaceDetailsResponse
 import com.cc.near_restaurant_app.retrofit.model.PlacesResponse
 import retrofit2.Call
@@ -18,10 +19,11 @@ interface PlacesApiService {
         @Query("language") language: String = "ko"
     ): Response<PlacesResponse>
 
-    @GET("place/details/json")
+    @GET("maps/api/place/details/json")
     suspend fun getPlaceDetails(
         @Query("place_id") placeId: String,
-        @Query("fields") fields: String, // 'formatted_address,rating,types' 등을 전달
-        @Query("key") apiKey: String
+        @Query("fields") fields: String =
+            "name,rating,formatted_phone_number,formatted_address,types,photos",
+        @Query("key") apiKey: String = BuildConfig.PLACES_API_KEY
     ): Response<PlaceDetailsResponse> //  PlaceDetailsResponse는 이 API의 응답을 파싱할 데이터 클래스여야 합니다.
 }

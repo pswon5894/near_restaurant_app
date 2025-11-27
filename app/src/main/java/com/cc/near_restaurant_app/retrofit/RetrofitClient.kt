@@ -15,7 +15,9 @@ object RetrofitClient {
             .create(PlacesApiService::class.java)
     }
     fun getPhotoUrl(photoReference: String, width: Int, height: Int): String {
-        val apiKey = BuildConfig.PLACES_API_KEY
-        return "${BASE_URL}maps/api/place/photo?photoreference=$photoReference&maxwidth=$width&maxheight=$height&key=$apiKey"
+        return "${BASE_URL}maps/api/place/photo" +
+                "?maxwidth=$width" +
+                "&photoreference=$photoReference" +
+                "&key=${BuildConfig.PLACES_API_KEY}"
     }
 }
