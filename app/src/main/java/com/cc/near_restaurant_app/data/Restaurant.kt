@@ -1,7 +1,10 @@
 package com.cc.near_restaurant_app.data
 
+import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Restaurant(
     val name: String?,
     val latLng: LatLng,
@@ -9,5 +12,6 @@ data class Restaurant(
     val address: String?,
     val types: List<String>? = null,  // 추가
     val category: String = "",               // 예: "일식", "햄버거"
-    val rating: Double? = null
-)
+    val rating: Double? = null,
+    val website: String? = null //  홈페이지 URL 필드 추가
+) : Parcelable

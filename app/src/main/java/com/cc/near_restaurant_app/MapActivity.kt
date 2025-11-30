@@ -70,7 +70,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
 
-        // 리스트 아이템 클릭 → 지도 이동 + 마커 강조
+        // 리스트 아이템 클릭 -> 지도 이동 + 마커 강조
         adapter.setOnItemClickListener { position ->
             val restaurant = restaurants[position]
             val latLng = restaurant.latLng
@@ -90,6 +90,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             // 하이라이트 처리
             adapter.setSelectedPosition(position)
+        }
+        //리스트뷰 상세보기 버튼 팝업 다이얼로그
+        adapter.setOnDetailShowClickListener { restaurant ->
+            val detailFragment = RestaurantDetailFragment.newInstance(restaurant)
+            // MapActivity는 AppCompatActivity를 상속하므로 supportFragmentManager를 사용
+            detailFragment.show(supportFragmentManager, "RestaurantDetailDialog")
         }
     }
 
@@ -202,7 +208,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 try {
                                     val detailsResponse = RetrofitClient.instance.getPlaceDetails(
                                         placeId,
-                                        fields = "formatted_address,rating,types",
+                                        fields = "formatted_address,rating,types,website",
                                         apiKey = apiKey
                                     )
                                     val detailsResult = detailsResponse.body()?.result
@@ -213,7 +219,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                         photoReference = place.photos?.firstOrNull()?.photoReference,
                                         address = detailsResult?.formatted_address ?: place.vicinity ?: "주소 정보 없음",
                                         rating = detailsResult?.rating,
-                                        types = detailsResult?.types ?: emptyList()
+                                        types = detailsResult?.types ?: emptyList(),
+                                        website = detailsResult?.website
                                     )
                                 } catch (e: Exception) {
                                     Log.e("MapActivity", "Place Details failed for ${place.name}: ${e.message}")
@@ -221,7 +228,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                                         name = place.name ?: "이름 없음",
                                         latLng = LatLng(place.geometry?.location?.lat ?: 0.0, place.geometry?.location?.lng ?: 0.0),
                                         photoReference = place.photos?.firstOrNull()?.photoReference,
-                                        address = place.vicinity ?: "주소 정보 없음"
+                                        address = place.vicinity ?: "주소 정보 없음",
+                                        website = null
                                     )
                                 }
                             }

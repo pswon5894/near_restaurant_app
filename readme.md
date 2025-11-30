@@ -20,3 +20,6 @@ why 레트로핏?
 
 //https://developers.google.com/maps/documentation/places/web-service/legacy/details?hl=ko#PlacePhoto
 //구글 place api 기존
+
+Place API는 Nearby Search(근처 검색), Text Search(텍스트 검색),  Place Details (장소 세부 정보), Place Photos (장소 사진), Autocomplete (장소 자동 완성)
+https://www.youtube.com/watch?v=VI4fnizbQ2c

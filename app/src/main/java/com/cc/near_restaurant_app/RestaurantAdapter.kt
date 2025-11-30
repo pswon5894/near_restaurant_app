@@ -15,7 +15,9 @@ class RestaurantAdapter(
     private var selectedPosition: Int = -1
     private var itemClickListener: ((Int) -> Unit)? = null
 
-    inner class RestaurantViewHolder(private val binding: ItemRestaurantBinding) :
+    private var onDetailShowClickListener: ((restaurant: Restaurant) -> Unit)? = null
+
+    inner class RestaurantViewHolder(val binding: ItemRestaurantBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(restaurant: Restaurant, position: Int) {
@@ -59,6 +61,11 @@ class RestaurantAdapter(
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
         holder.bind(restaurants[position], position)
+
+        val restaurant = restaurants[position]
+        holder.binding.bDetailShow.setOnClickListener {
+            onDetailShowClickListener?.invoke(restaurant)
+        }
     }
 
     override fun getItemCount(): Int = restaurants.size
@@ -72,6 +79,10 @@ class RestaurantAdapter(
 
     fun setOnItemClickListener(listener: (Int) -> Unit) {
         itemClickListener = listener
+    }
+
+    fun setOnDetailShowClickListener(listener: (restaurant: Restaurant)-> Unit) {
+        this.onDetailShowClickListener = listener
     }
 }
 

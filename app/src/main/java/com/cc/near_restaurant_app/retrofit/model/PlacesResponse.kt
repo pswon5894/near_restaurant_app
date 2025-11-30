@@ -20,7 +20,8 @@ data class PlaceDetailsResult(
     //  MapActivity에서 필요로 하는 필드
     val rating: Double?,
     val types: List<String>?,
-    val photos: List<Photo>?
+    val photos: List<Photo>?,
+    val website: String?
 
     // ... 필요한 다른 상세 정보 필드 (예: hours, website, reviews 등)
 )
