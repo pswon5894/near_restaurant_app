@@ -28,7 +28,13 @@ android {
         buildConfigField(
             "String",
             "PLACES_API_KEY",
-            properties.getProperty("PLACES_API_KEY")
+            "\"${properties.getProperty("PLACES_API_KEY")}\""
+        )
+
+        buildConfigField(
+            "String",
+            "NEW_PLACES_API_KEY",
+            "\"${properties.getProperty("NEW_PLACES_API_KEY")}\""
         )
 
         // 기존 buildConfigField 그대로 둬도 상관없지만 Manifest 치환을 위해 placeholder 추가

@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val  BASE_URL = "https://maps.googleapis.com/"
+    private const val  BASE_URL = "https://places.googleapis.com/"
     val instance: PlacesApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -14,10 +14,9 @@ object RetrofitClient {
             .build()
             .create(PlacesApiService::class.java)
     }
-    fun getPhotoUrl(photoReference: String, width: Int, height: Int): String {
-        return "${BASE_URL}maps/api/place/photo" +
-                "?maxwidth=$width" +
-                "&photoreference=$photoReference" +
-                "&key=${BuildConfig.PLACES_API_KEY}"
+    fun getPhotoUrl(photoName: String, maxHeight: Int = 400): String {
+        return "$BASE_URL/v1/${photoName}/media" +
+                "?maxHeightPx=$maxHeight" +
+                "&key=${BuildConfig.NEW_PLACES_API_KEY}"
     }
 }

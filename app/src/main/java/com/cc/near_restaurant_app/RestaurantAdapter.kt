@@ -27,9 +27,9 @@ class RestaurantAdapter(
             binding.tvFoodType.text = restaurant.types?.joinToString(" / ") ?: "타입 없음"
 
 
-            val photoReference = restaurant.photoReference
-            val photoUrl = if (photoReference != null) {
-                RetrofitClient.getPhotoUrl(photoReference, 400, 400)
+            val photoName = restaurant.photoName
+            val photoUrl = if (photoName != null) {
+                RetrofitClient.getPhotoUrl(photoName, 400)
             } else {
                 null
             }

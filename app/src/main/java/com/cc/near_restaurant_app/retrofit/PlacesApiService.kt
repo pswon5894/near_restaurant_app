@@ -1,29 +1,44 @@
 package com.cc.near_restaurant_app.retrofit
 
 import com.cc.near_restaurant_app.BuildConfig
-import com.cc.near_restaurant_app.retrofit.model.PlaceDetailsResponse
-import com.cc.near_restaurant_app.retrofit.model.PlacesResponse
+import com.cc.near_restaurant_app.retrofit.model.NearbySearchRequest
+import com.cc.near_restaurant_app.retrofit.model.NearbySearchResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 interface PlacesApiService {
 
-    @GET("maps/api/place/nearbysearch/json")
-    suspend fun getNearbyPlaces(
-        @Query("location") location: String,
-        @Query("radius") radius: Int = 1000,
-        //1km 주변
-        @Query("type") type: String = "restaurant",
-        @Query("key") apiKey: String= BuildConfig.PLACES_API_KEY,
-        @Query("language") language: String = "ko"
-    ): Response<PlacesResponse>
+    @POST("v1/places:searchNearby")
+    suspend fun searchNearby(
+        @Body body: NearbySearchRequest,
+        @Header("X-Goog-Api-Key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY,
+        @Header("X-Goog-FieldMask") fieldMask: String =
+            "places.displayName,places.location,places.formattedAddress,places.rating,places.types,places.websiteUri,places.photos"
+    ): Response<NearbySearchResponse>
 
-    @GET("maps/api/place/details/json")
-    suspend fun getPlaceDetails(
-        @Query("place_id") placeId: String,
-        @Query("fields") fields: String =
-            "name,rating,formatted_phone_number,formatted_address,types,photos, website",
-        @Query("key") apiKey: String = BuildConfig.PLACES_API_KEY,
-        @Query("language") language: String = "ko"
-    ): Response<PlaceDetailsResponse> //  PlaceDetailsResponse는 이 API의 응답을 파싱할 데이터 클래스여야 합니다.
+//    @GET("v1/places/{placeId}")
+//    suspend fun getPlaceDetails(
+//        @Path("placeId") placeId: String,
+//        @Query("fields") fields: String =
+//            "id,displayName, formattedAddress,location,rating,photos,types,websiteUri",
+//        @Query("key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY
+//    ): Response<PlaceDetailsResponse>
+
+    @GET("v1/{photoName}/media")
+    suspend fun getPhoto(
+        @Path("photoName", encoded = true) photoName: String,
+        @Query("maxHeightPx") maxHeight: Int = 400,
+        @Query("key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY
+    ): Response<ResponseBody>
 }
+
+//Retrofit에서 @Path는 URL 경로(Path) 안에 변수를 넣을 때 사용
+//신 Places API는 RESTFUL 구조라서 리소스를 URL로 직접 접근
+
+//이전 Places API는 GET 요청만 썼기 때문에 Body가 필요 없음.
+//하지만 신 Places API는 POST 기반

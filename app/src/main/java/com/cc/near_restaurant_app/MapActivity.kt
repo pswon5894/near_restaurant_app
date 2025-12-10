@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cc.near_restaurant_app.databinding.ActivityMapBinding
 import com.cc.near_restaurant_app.data.Restaurant
 import com.cc.near_restaurant_app.retrofit.RetrofitClient
+import com.cc.near_restaurant_app.retrofit.model.Circle
+import com.cc.near_restaurant_app.retrofit.model.LatLngData
+import com.cc.near_restaurant_app.retrofit.model.LocationRestriction
+import com.cc.near_restaurant_app.retrofit.model.NearbySearchRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -50,12 +54,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         enableEdgeToEdge()
 
         binding = ActivityMapBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         binding.rvRestaurants.layoutManager = LinearLayoutManager(this)
         adapter = RestaurantAdapter(restaurants)
         binding.rvRestaurants.adapter = adapter
-        setContentView(binding.root)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         currentLat = intent.getDoubleExtra("currentLat", 0.0)
         currentLng = intent.getDoubleExtra("currentLng", 0.0)
 
@@ -111,15 +117,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun checkLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            this, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
             LOCATION_PERMISSION_REQUEST_CODE
         )
     }
@@ -157,8 +161,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        val currentLocation = LatLng(currentLat, currentLng)
+
         mMap?.apply {
-            val currentLocation = LatLng(currentLat, currentLng)
             setMaxZoomPreference(20f)
             setMinZoomPreference(12f)
             moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 16f))
@@ -194,70 +199,76 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun loadNearbyRestaurants(lat: Double, lng: Double) {
         restaurantLoadJob?.cancel()
         restaurantLoadJob = CoroutineScope(Dispatchers.IO).launch {
-            val locationStr = "$lat,$lng"
-            val apiKey = BuildConfig.PLACES_API_KEY
-
             try {
-                val nearbyResponse = RetrofitClient.instance.getNearbyPlaces(locationStr, 1000, "restaurant", apiKey)
-                if (nearbyResponse.isSuccessful) {
-                    val nearbyResults = nearbyResponse.body()?.results ?: emptyList()
+                val requestBody = NearbySearchRequest(
+                    includedTypes = listOf("restaurant"),
+                    maxResultCount = 20,
+                    rankPreference = "DISTANCE",
+                    locationRestriction = LocationRestriction(
+                        circle = Circle(
+                            center = LatLngData(
+                                latitude = lat,
+                                longitude = lng
+                            ),
+                            radius = 1000.0     //1000 미터
+                        )
+                    )
+                )
 
-                    val jobs = nearbyResults.mapNotNull { place ->
-                        place.place_id?.let { placeId ->
-                            async {
-                                try {
-                                    val detailsResponse = RetrofitClient.instance.getPlaceDetails(
-                                        placeId,
-                                        fields = "formatted_address,rating,types,website",
-                                        apiKey = apiKey
-                                    )
-                                    val detailsResult = detailsResponse.body()?.result
+                val response = RetrofitClient.instance.searchNearby(requestBody)
+                if (!response.isSuccessful) {
+                    Log.e("Map", "Nearby failed: ${response.code()}")
+                    return@launch
+                }
 
-                                    Restaurant(
-                                        name = place.name ?: "이름 없음",
-                                        latLng = LatLng(place.geometry?.location?.lat ?: 0.0, place.geometry?.location?.lng ?: 0.0),
-                                        photoReference = place.photos?.firstOrNull()?.photoReference,
-                                        address = detailsResult?.formatted_address ?: place.vicinity ?: "주소 정보 없음",
-                                        rating = detailsResult?.rating,
-                                        types = detailsResult?.types ?: emptyList(),
-                                        website = detailsResult?.website
-                                    )
-                                } catch (e: Exception) {
-                                    Log.e("MapActivity", "Place Details failed for ${place.name}: ${e.message}")
-                                    Restaurant(
-                                        name = place.name ?: "이름 없음",
-                                        latLng = LatLng(place.geometry?.location?.lat ?: 0.0, place.geometry?.location?.lng ?: 0.0),
-                                        photoReference = place.photos?.firstOrNull()?.photoReference,
-                                        address = place.vicinity ?: "주소 정보 없음",
-                                        website = null
-                                    )
-                                }
-                            }
-                        }
-                    }
+                // API 결과를 Restaurant 리스트로 변환
+                val resultList = response.body()?.places?.map { place ->
+                    Restaurant(
+                        name = place.displayName?.text ?: "이름 없음",
+                        latLng = LatLng(
+                            place.location?.latitude ?: 0.0,
+                            place.location?.longitude ?: 0.0),
+                        address = place.formattedAddress ?: "주소 없음",
+                        rating = place.rating,
+                        types = place.types ?: emptyList(),
+                        website = place.websiteUri,
+                        photoName = place.photos?.firstOrNull()?.name
+                    )
+                } ?: emptyList()
 
-                    val updatedRestaurants = jobs.awaitAll()
+                withContext(Dispatchers.Main) {
 
-                    withContext(Dispatchers.Main) {
-                        restaurants.clear()
-                        restaurants.addAll(updatedRestaurants)
+                    Log.d("TEST", "결과 개수 = ${resultList.size}")
+                    Log.d("Map", "raw JSON = ${response.errorBody()?.string()}")
+                    Log.d("Map", "body toString = ${response.body()}")
 
-                        mMap?.clear()
-                        markerMap.clear()
-                        setMarker()
-                        updatedRestaurants.forEach { r ->
-                            r.name?.let { name ->
-                                val marker = mMap?.addMarker(MarkerOptions().position(r.latLng).title(name))
-                                marker?.let { markerMap[name] = it }
-                            }
-                        }
+                    restaurants.clear()
+                    restaurants.addAll(resultList)
 
-                        adapter.notifyDataSetChanged() // 전체 갱신 (최초)
-                    }
-                } else Log.e("MapActivity", "Nearby Search API Failed: ${nearbyResponse.code()}")
+                    updateMarkers()
+
+                    adapter.notifyDataSetChanged()
+                }
+
             } catch (e: Exception) {
-                Log.e("MapActivity", "네트워크 예외 발생: ${e.message}")
-                e.printStackTrace()
+                Log.e("Map", "Error: ${e.message}")
+            }
+        }
+    }
+    private fun updateMarkers() {
+        mMap?.clear()
+        markerMap.clear()
+
+        setMarker()
+
+        restaurants.forEach { r ->
+            val marker = mMap?.addMarker(
+                MarkerOptions()
+                    .position(r.latLng)
+                    .title(r.name)
+            )
+            if (marker !=null) {
+                markerMap[r.name] = marker
             }
         }
     }
