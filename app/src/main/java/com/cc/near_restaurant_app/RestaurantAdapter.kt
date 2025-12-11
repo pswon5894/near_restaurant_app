@@ -24,7 +24,8 @@ class RestaurantAdapter(
             binding.tvRestaurantName.text = restaurant.name
             binding.tvRestaurantAddress.text = restaurant.address
             binding.tvRating.text = restaurant.rating?.let { "평점 %.1f".format(it) } ?: "평점 없음"
-            binding.tvFoodType.text = restaurant.types?.joinToString(" / ") ?: "타입 없음"
+//            binding.tvFoodType.text = restaurant.types?.joinToString(" / ") ?: "타입 없음"
+            binding.tvFoodType.text = restaurant.category
 
 
             val photoName = restaurant.photoName

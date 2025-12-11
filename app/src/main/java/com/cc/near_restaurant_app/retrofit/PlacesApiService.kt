@@ -18,7 +18,7 @@ interface PlacesApiService {
         @Body body: NearbySearchRequest,
         @Header("X-Goog-Api-Key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY,
         @Header("X-Goog-FieldMask") fieldMask: String =
-            "places.displayName,places.location,places.formattedAddress,places.rating,places.types,places.websiteUri,places.photos"
+            "places.displayName,places.location,places.shortFormattedAddress,places.rating,places.types,places.websiteUri,places.photos"
     ): Response<NearbySearchResponse>
 
 //    @GET("v1/places/{placeId}")

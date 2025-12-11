@@ -1,7 +1,6 @@
 package com.cc.near_restaurant_app
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,12 +50,14 @@ class RestaurantDetailFragment : DialogFragment() {
             binding.tvPopupRating.text = it.rating?.let { r-> "평점 %.1f".format(r)}?: "평점 없음"
             //..(사진 로딩, 상세 정보 표시 등)
 
-            val websiteUrl = it.website
+            val placeId = restaurant?.placeId
 
-            if (!websiteUrl.isNullOrEmpty()) {
+            if (!placeId.isNullOrEmpty()) {
+                val googleDetailUrl = "https://www.goggle.com/maps/place/?q=place_id:$placeId"
+
                 binding.wvRestaurantWebsite.settings.javaScriptEnabled = true
                 binding.wvRestaurantWebsite.webViewClient = WebViewClient()
-                binding.wvRestaurantWebsite.loadUrl(websiteUrl)
+                binding.wvRestaurantWebsite.loadUrl(googleDetailUrl)
             } else {
                 binding.wvRestaurantWebsite.visibility = View.GONE
             }

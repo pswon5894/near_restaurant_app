@@ -9,11 +9,11 @@ data class PlaceDetail(
     val displayName: LocalizedText?,
     val location: LatLngData?,
     val formattedAddress: String?,
+    val shortFormattedAddress: String?,
     val rating: Double?,
     val types: List<String>?,
     val websiteUri: String?,
-    val photos: List<PhotoDetail>?,
-    val shortFormattedAddress: String? = null
+    val photos: List<PhotoDetail>?
 )
 
 data class LocalizedText(

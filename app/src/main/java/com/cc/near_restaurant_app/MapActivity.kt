@@ -204,6 +204,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     includedTypes = listOf("restaurant"),
                     maxResultCount = 20,
                     rankPreference = "DISTANCE",
+                    languageCode = "ko",
                     locationRestriction = LocationRestriction(
                         circle = Circle(
                             center = LatLngData(
@@ -228,19 +229,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         latLng = LatLng(
                             place.location?.latitude ?: 0.0,
                             place.location?.longitude ?: 0.0),
-                        address = place.formattedAddress ?: "주소 없음",
+                        address = place.shortFormattedAddress ?: place.formattedAddress ?: "주소 없음",
                         rating = place.rating,
                         types = place.types ?: emptyList(),
                         website = place.websiteUri,
-                        photoName = place.photos?.firstOrNull()?.name
+                        photoName = place.photos?.firstOrNull()?.name,
+                        placeId = place.id
                     )
                 } ?: emptyList()
 
                 withContext(Dispatchers.Main) {
-
-                    Log.d("TEST", "결과 개수 = ${resultList.size}")
-                    Log.d("Map", "raw JSON = ${response.errorBody()?.string()}")
-                    Log.d("Map", "body toString = ${response.body()}")
 
                     restaurants.clear()
                     restaurants.addAll(resultList)

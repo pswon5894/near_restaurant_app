@@ -4,6 +4,7 @@ data class NearbySearchRequest (
     val includedTypes: List<String>? = null,        // 검색할 장소 유형 (예: restaurant)
     val maxResultCount: Int? =20,
     val rankPreference: String? = "DISTANCE",
+    val languageCode: String = "ko",
     val locationRestriction: LocationRestriction
 )
 
