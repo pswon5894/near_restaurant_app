@@ -3,6 +3,7 @@ package com.cc.near_restaurant_app.retrofit
 import com.cc.near_restaurant_app.BuildConfig
 import com.cc.near_restaurant_app.retrofit.model.NearbySearchRequest
 import com.cc.near_restaurant_app.retrofit.model.NearbySearchResponse
+import com.cc.near_restaurant_app.retrofit.model.PlaceDetail
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -12,22 +13,14 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 interface PlacesApiService {
-
     @POST("v1/places:searchNearby")
     suspend fun searchNearby(
         @Body body: NearbySearchRequest,
-        @Header("X-Goog-Api-Key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY,
-        @Header("X-Goog-FieldMask") fieldMask: String =
-            "places.displayName,places.location,places.shortFormattedAddress,places.rating,places.types,places.websiteUri,places.photos"
-    ): Response<NearbySearchResponse>
+        @Header("X-Goog-FieldMask") fieldMask: String,
+//        = "places.displayName,places.location,places.shortFormattedAddress,places.rating,places.types,places.websiteUri,places.photos"
+        @Header("X-Goog-Api-Key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY
 
-//    @GET("v1/places/{placeId}")
-//    suspend fun getPlaceDetails(
-//        @Path("placeId") placeId: String,
-//        @Query("fields") fields: String =
-//            "id,displayName, formattedAddress,location,rating,photos,types,websiteUri",
-//        @Query("key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY
-//    ): Response<PlaceDetailsResponse>
+    ): Response<NearbySearchResponse>
 
     @GET("v1/{photoName}/media")
     suspend fun getPhoto(
@@ -35,6 +28,15 @@ interface PlacesApiService {
         @Query("maxHeightPx") maxHeight: Int = 400,
         @Query("key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY
     ): Response<ResponseBody>
+
+
+    //프레그먼트 뷰
+    @POST("v1/places/{placeId")
+    suspend fun getPlaceDetail(
+        @Path("placeId") placeId: String,
+        @Header("X-Goog-Api-Key") apiKey: String = BuildConfig.NEW_PLACES_API_KEY,
+        @Header("X-Goog-FieldMask") fieldMask: String
+    ): PlaceDetail
 }
 
 //Retrofit에서 @Path는 URL 경로(Path) 안에 변수를 넣을 때 사용

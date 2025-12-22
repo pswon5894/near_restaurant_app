@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cc.near_restaurant_app.databinding.ActivityMapBinding
 import com.cc.near_restaurant_app.data.Restaurant
+import com.cc.near_restaurant_app.data.RestaurantReview
 import com.cc.near_restaurant_app.retrofit.RetrofitClient
 import com.cc.near_restaurant_app.retrofit.model.Circle
 import com.cc.near_restaurant_app.retrofit.model.LatLngData
@@ -216,7 +217,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                 )
 
-                val response = RetrofitClient.instance.searchNearby(requestBody)
+                val fieldMask ="places.id,places.displayName,places.location," +
+                        "places.formattedAddress,places.shortFormattedAddress," +
+                        "places.rating,places.types,places.websiteUri,places.photos," +
+                        "places.dineIn,places.delivery,places.takeout,places.servesLunch," +
+                        "places.servesDinner,places.restroom,places.wifi,places.reservable," +
+                        "places.parkingOptions,places.reviews"
+
+                val response = RetrofitClient.instance.searchNearby(
+                    body = requestBody,
+                    fieldMask = fieldMask)
                 if (!response.isSuccessful) {
                     Log.e("Map", "Nearby failed: ${response.code()}")
                     return@launch
@@ -234,7 +244,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         types = place.types ?: emptyList(),
                         website = place.websiteUri,
                         photoName = place.photos?.firstOrNull()?.name,
-                        placeId = place.id
+                        placeId = place.id,
+
+                        //프레그먼트 뷰
+                        delivery = place.delivery,
+                        takeout = place.takeout,
+                        servesLunch = place.servesLunch,
+                        servesDinner = place.servesDinner,
+                        restroom = place.restroom,
+                        wifi = place.wifi,
+                        reservable = place.reservable,
+                        parkingOptions = place.parkingOptions?.hasParking,
+
+                        reviews = place.reviews?.map {review ->
+                            RestaurantReview(
+                                authorName = review.authorAttribution?.displayName ?: "익명",
+                                rating = review.rating ?: 0.0,
+                                text = review.text?.text,
+                                relativePublishTimeDescription = review.relativePublishTimeDescription
+                            )
+                        }
                     )
                 } ?: emptyList()
 

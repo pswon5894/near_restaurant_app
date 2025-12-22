@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "near_restaurant_app"
 include(":app")
- 

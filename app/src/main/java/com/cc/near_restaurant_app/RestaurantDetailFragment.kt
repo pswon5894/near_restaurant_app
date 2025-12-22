@@ -4,15 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebViewClient
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.cc.near_restaurant_app.data.Restaurant
 import com.cc.near_restaurant_app.databinding.FragmentRestaurantDetailBinding
+import com.cc.near_restaurant_app.util.ReviewAdapter
+import com.google.android.libraries.places.api.Places
+//import com.google.android.libraries.places.api.model.Place
+//import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 
 class RestaurantDetailFragment : DialogFragment() {
 
     private var _binding: FragmentRestaurantDetailBinding? = null
     private val binding get() = _binding!!
+    private lateinit var placesClient: PlacesClient
 
     companion object {
         private const val ARG_RESTAURANT = "restaurant_data"
@@ -28,10 +34,17 @@ class RestaurantDetailFragment : DialogFragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) { // <--- onCreate로 이동
+        super.onCreate(savedInstanceState)
+
+        Places.initialize(requireContext(), BuildConfig.NEW_PLACES_API_KEY)
+        placesClient = Places.createClient(requireContext())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentRestaurantDetailBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,25 +54,33 @@ class RestaurantDetailFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 팝업으로 전달받은 Restaurant 데이터를 꺼냄
-        val restaurant: Restaurant? = arguments?.getParcelable(ARG_RESTAURANT)
+        val restaurant: Restaurant? = arguments?.getParcelable<Restaurant>(ARG_RESTAURANT)
 
-        restaurant?.let{
+        restaurant?.let{ r ->
             // 여기에 팝업 레이아웃의 TextView에 대이터를 설정하는 로직 구현
-            binding.tvPopupName.text = it.name
-            binding.tvPopupAddress.text = it.address
-            binding.tvPopupRating.text = it.rating?.let { r-> "평점 %.1f".format(r)}?: "평점 없음"
+            binding.tvPopupName.text = r.name
+            binding.tvPopupAddress.text = r.address
+            binding.tvPopupRating.text = r.rating?.let { r-> "평점 %.1f".format(r) }?: "평점 없음"
             //..(사진 로딩, 상세 정보 표시 등)
 
-            val placeId = restaurant?.placeId
+            // 3. New Place API에서 받아온 상세 정보 표시 (이미 객체에 있음!)
+            // 서비스 옵션
+            binding.tvServesLunch.text = if (r.servesLunch == true) "점심 제공 ✅" else "정보 없음"
+            binding.tvServesDinner.text = if (r.servesDinner == true) "저녁 제공 ✅" else "정보 없음"
 
-            if (!placeId.isNullOrEmpty()) {
-                val googleDetailUrl = "https://www.goggle.com/maps/place/?q=place_id:$placeId"
+            // 편의 시설 및 계획
+            binding.tvParkingOptions.text = if (r.parkingOptions == true) "주차 가능 🅿️" else "정보 없음"
+            binding.tvRestroom.text = if (r.restroom == true) "화장실 있음 🚻" else "정보 없음"
 
-                binding.wvRestaurantWebsite.settings.javaScriptEnabled = true
-                binding.wvRestaurantWebsite.webViewClient = WebViewClient()
-                binding.wvRestaurantWebsite.loadUrl(googleDetailUrl)
+            if (!r.reviews.isNullOrEmpty()) {
+                val reviewAdapter = ReviewAdapter(r.reviews)
+                binding.rvReviews.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = reviewAdapter
+                }
+//                binding.tvNoReviews.visibility = View.GONE
             } else {
-                binding.wvRestaurantWebsite.visibility = View.GONE
+//                binding.tvNoReviews.visibility = View.VISIBLE
             }
         }
     }

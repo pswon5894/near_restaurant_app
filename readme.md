@@ -23,3 +23,5 @@ why 레트로핏?
 
 Place API는 Nearby Search(근처 검색), Text Search(텍스트 검색),  Place Details (장소 세부 정보), Place Photos (장소 사진), Autocomplete (장소 자동 완성)
 https://www.youtube.com/watch?v=VI4fnizbQ2c
+
+https://developers.google.com/maps/documentation/places/android-sdk/place-photos?hl=ko&_gl=1*1bnd0st*_up*MQ..*_ga*MTM2NDgwNjI0LjE3NjU0MTc0MDE.*_ga_SM8HXJ53K2*czE3NjU0MTc0MDEkbzEkZzAkdDE3NjU0MTc0MDEkajYwJGwwJGgw*_ga_NRWSTWS78N*czE3NjU0MTc0MDEkbzEkZzEkdDE3NjU0MTc0NTgkajMkbDAkaDA.

@@ -52,22 +52,100 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
         android:layout_marginTop="14dp"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/iv_popup_photo"
         app:layout_constraintTop_toBottomOf="@+id/tv_popup_rating"
         tools:text="영업 시간" />
 
-    <WebView
-        android:id="@+id/wv_restaurant_website"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="31dp"
-        android:layout_marginBottom="142dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+    <TextView
+        android:id="@+id/tv_parking_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="15dp"
+        android:text="parkingOptions"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_popup_photo" />
+
+    <TextView
+        android:id="@+id/tv_payment_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="19dp"
+        android:text="paymentOptions"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_parking_options" />
+
+    <TextView
+        android:id="@+id/tv_primary_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="14dp"
+        android:text="primaryType"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_payment_options" />
+
+    <TextView
+        android:id="@+id/tv_restroom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="10dp"
+        android:text="restroom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_primary_type" />
+
+    <TextView
+        android:id="@+id/tv_current_opening_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="14dp"
+        android:text="CURRENT_OPENING_HOURS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_restroom" />
+
+    <TextView
+        android:id="@+id/tv_opening_hours"
+        android:layout_width="157dp"
+        android:layout_height="23dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="12dp"
+        android:text="tvOpeningHours"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_current_opening_hour" />
+
+    <TextView
+        android:id="@+id/tv_serves_lunch"
+        android:layout_width="113dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:text="SERVES_LUNCH"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_opening_hours" />
+
+    <TextView
+        android:id="@+id/tv_serves_dinner"
+        android:layout_width="118dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:text="SERVES_DINNER"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_serves_lunch" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_reviews"
+        android:layout_width="match_parent"
+        android:layout_height="297dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_serves_dinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
