@@ -1,7 +1,5 @@
 package com.cc.near_restaurant_app.retrofit.model
 
-//import com.google.android.libraries.places.api.model.Review
-
 data class NearbySearchResponse (
     val places: List<PlaceDetail>?
 )

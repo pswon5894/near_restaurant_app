@@ -10,8 +10,6 @@ import com.cc.near_restaurant_app.data.Restaurant
 import com.cc.near_restaurant_app.databinding.FragmentRestaurantDetailBinding
 import com.cc.near_restaurant_app.util.ReviewAdapter
 import com.google.android.libraries.places.api.Places
-//import com.google.android.libraries.places.api.model.Place
-//import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 
 class RestaurantDetailFragment : DialogFragment() {
@@ -54,7 +52,15 @@ class RestaurantDetailFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 팝업으로 전달받은 Restaurant 데이터를 꺼냄
-        val restaurant: Restaurant? = arguments?.getParcelable<Restaurant>(ARG_RESTAURANT)
+//        val restaurant: Restaurant? = arguments?.getParcelable<Restaurant>(ARG_RESTAURANT)
+
+        val restaurant: Restaurant? =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                arguments?.getParcelable(ARG_RESTAURANT, Restaurant::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                arguments?.getParcelable(ARG_RESTAURANT)
+            }
 
         restaurant?.let{ r ->
             // 여기에 팝업 레이아웃의 TextView에 대이터를 설정하는 로직 구현
@@ -62,6 +68,9 @@ class RestaurantDetailFragment : DialogFragment() {
             binding.tvPopupAddress.text = r.address
             binding.tvPopupRating.text = r.rating?.let { r-> "평점 %.1f".format(r) }?: "평점 없음"
             //..(사진 로딩, 상세 정보 표시 등)
+//            binding.tvOpeningHours.text = r.
+//            binding.tvPhoneNumber.text = r.phone ?: 전화번호 없음
+//            binding.tvWebsiteUri.text = r.weburi ?: 웹사이트 없음
 
             // 3. New Place API에서 받아온 상세 정보 표시 (이미 객체에 있음!)
             // 서비스 옵션

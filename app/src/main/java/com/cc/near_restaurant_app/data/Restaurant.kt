@@ -13,7 +13,7 @@ data class Restaurant(
     val address: String,
     val types: List<String>? = null,  // 추가
     val rating: Double? = null,
-    val website: String? = null, //  홈페이지 URL 필드 추가
+    val website: String? = null, //  홈페이지 URL
     val placeId: String? = null,
 
     //프레그먼트 뷰
@@ -24,7 +24,9 @@ data class Restaurant(
     val restroom: Boolean? = null,
     val wifi: Boolean? = null,
     val reservable: Boolean? = null,
-    val parkingOptions: Boolean? = null,
+    val parkingOptions: Boolean? = null, // 주차 유무 (ParkingOptions 객체 대신 단순 유무
+
+    //val phone
 
     val reviews: List<RestaurantReview>? = null
 ) : Parcelable {

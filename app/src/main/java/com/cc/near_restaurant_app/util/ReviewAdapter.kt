@@ -15,7 +15,7 @@ class ReviewAdapter (
 
         fun bind(review: RestaurantReview) {
             binding.tvReviewAuthor.text = review.authorName ?: "익명"
-            binding.tvReviewRating.text = review.rating?.let { "%.1f".format(it) } ?: "0.0"
+            binding.tvReviewRating.text = review.rating?.let { "평점 %.1f".format(it) } ?: "0.0"
             binding.tvReviewDate.text = review.relativePublishTimeDescription
             binding.tvReviewText.text = review.text ?: "내용이 없습니다."
         }

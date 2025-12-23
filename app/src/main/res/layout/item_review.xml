@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="tvReviewAuthor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,41 +19,30 @@
         android:id="@+id/tv_review_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="tvReviewRating"
-        app:layout_constraintStart_toEndOf="@+id/tv_review_author"
+        app:layout_constraintEnd_toStartOf="@+id/tv_review_date"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_review_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="19dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="tvReviewDate"
-        app:layout_constraintStart_toEndOf="@+id/tv_review_rating"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_review_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
         android:text="tvReviewText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_review_author" />
-
-    <TextView
-        android:id="@+id/tv_no_reviews"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="20dp"
-        android:text="등록된 리뷰가 없습니다."
-        android:textColor="#888888"
-        android:visibility="gone" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
